@@ -12,15 +12,21 @@ $( document ).ready( function(){
     // NOT WORKING YET :(
     // using a test object
     var objectToSend = {
-      name: 'testName',
-      age: 'testName',
-      gender: 'testName',
-      readyForTransfer: 'testName',
-      notes: 'testName',
+      name: $('#nameIn').val(),
+      age: $('#ageIn').val(),
+      gender: $('#genderIn').val(),
+      readyForTransfer: $('#readyForTransferIn').val(),
+      notes: $('#notesIn').val()
     };
     // call saveKoala with the new obejct
     saveKoala( objectToSend );
   }); //end addButton on click
+
+  $('#viewKoalas').on('click', '.deleteBtn', function(){
+    var koalaToDelete = $(this).data('buttonid');
+    deleteKoalas(koalaToDelete);
+  });
+
 }); // end doc ready
 
 function getKoalas(){
@@ -29,8 +35,9 @@ function getKoalas(){
   $.ajax({
     url: '/koalas',
     type: 'GET',
-    success: function( data ){
-      console.log( 'got some koalas: ', data );
+    success: function( koalas ){
+      console.log( 'got some koalas: ', koalas);
+      appendToDom(koalas);
     } // end success
   }); //end ajax
   // display on DOM with buttons that allow edit of each
@@ -45,6 +52,38 @@ function saveKoala( newKoala ){
     data: newKoala,
     success: function( data ){
       console.log( 'got some koalas: ', data );
+      getKoalas();
     } // end success
   }); //end ajax
+}
+
+function appendToDom(koalas){
+  $('#viewKoalas').empty();
+  var koalaList = koalas.koalas;
+
+
+
+  for (var i = 0; i < koalaList.length; i++) {
+      var koala = koalaList[i];
+    $tr = $('<tr></tr>');
+    $tr.append('<td>' + koala.name + '</td>');
+    $tr.append('<td>' + koala.age + '</td>');
+    $tr.append('<td>' + koala.gender + '</td>');
+    $tr.append('<td>' + koala.ready_for_transfer + '</td>');
+    $tr.append('<td>' + koala.notes + '</td>');
+    $tr.append('<td><button class="deleteBtn" data-buttonid="' + koala.id + '">DELETE</button></td>');
+    $('#viewKoalas').append($tr);
+  }
+
+}
+
+function deleteKoalas(koalaToDelete){
+
+    $.ajax({
+      type: 'DELETE',
+      url: '/koalas/' + koalaToDelete,
+      data: koalaToDelete,
+      success: getKoalas
+    });
+
 }
