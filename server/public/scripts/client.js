@@ -1,4 +1,5 @@
 var editingKoalaId;
+var editingKoalas;
 
 console.log( 'js' );
 
