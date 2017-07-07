@@ -97,7 +97,7 @@ function appendToDom(koalas){
       var koala = koalaList[i];
     $tr = $('<tr></tr>');
     $tr.data('koala', koala);
-    $tr.append('<td>' + koala.name + '</td>');
+    $tr.append('<td><b>' + koala.name + '</b></td>');
     $tr.append('<td>' + koala.age + '</td>');
     $tr.append('<td>' + koala.gender + '</td>');
     $tr.append('<td>' + koala.ready_for_transfer + '</td>');
