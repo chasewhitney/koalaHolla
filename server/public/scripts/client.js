@@ -27,6 +27,12 @@ $( document ).ready( function(){
     deleteKoalas(koalaToDelete);
   });
 
+  // mark ready for transfer button
+  $('#viewKoalas').on('click', '.transferBtn', function() {
+    var koalaToTransfer = $(this).data('transferid');
+    transferKoala(koalaToTransfer);
+  })
+
 }); // end doc ready
 
 function getKoalas(){
@@ -71,10 +77,24 @@ function appendToDom(koalas){
     $tr.append('<td>' + koala.gender + '</td>');
     $tr.append('<td>' + koala.ready_for_transfer + '</td>');
     $tr.append('<td>' + koala.notes + '</td>');
+    if (!koala.ready_for_transfer) {
+      $tr.append('<td><button class="transferBtn" data-transferid="' + koala.id + '">Mark Ready For Transfer</button></td>');
+    } else {
+      $tr.append('<td></td>');
+    }
     $tr.append('<td><button class="deleteBtn" data-buttonid="' + koala.id + '">DELETE</button></td>');
     $('#viewKoalas').append($tr);
   }
 
+}
+
+function transferKoala(koala) {
+  $.ajax({
+    type: 'PUT',
+    url: '/koalas/' + koala,
+    data: koala,
+    success: getKoalas
+  });
 }
 
 function deleteKoalas(koalaToDelete){

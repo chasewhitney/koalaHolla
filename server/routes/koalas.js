@@ -66,6 +66,33 @@ router.post('/', function(req, res) {
   }) // end pool
 });
 
+router.put('/:id', function(req, res) {
+  var koala = req.params.id;
+  pool.connect(function(errorConnectingToDatabase, db, done){
+    if(errorConnectingToDatabase) {
+      console.log('Error connecting to the database.');
+      res.sendStatus(500);
+    } else {
+      // We connected to the database!!!
+      // Now we're going to GET things from the db
+      var queryText = 'UPDATE "koalas" SET "ready_for_transfer" = \'Y\' WHERE "id" = ' + koala +';';
+      // errorMakingQuery is a bool, result is an object
+      db.query(queryText, function(errorMakingQuery, result){
+        done();
+        if(errorMakingQuery) {
+          console.log('Attempted to query with', queryText);
+          console.log('Error making query');
+          res.sendStatus(500);
+        } else {
+          // console.log(result);
+          // Send back the results
+          res.sendStatus(200);
+        }
+      }); // end query
+    } // end if
+  }) // end pool
+});
+
 router.delete('/:id', function(req, res) {
   var koala = req.params.id;
   pool.connect(function(errorConnectingToDatabase, db, done){
