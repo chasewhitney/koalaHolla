@@ -1,3 +1,5 @@
+var editingKoalaId;
+
 console.log( 'js' );
 
 $( document ).ready( function(){
@@ -18,8 +20,17 @@ $( document ).ready( function(){
       readyForTransfer: $('#readyForTransferIn').val(),
       notes: $('#notesIn').val()
     };
-    // call saveKoala with the new obejct
-    saveKoala( objectToSend );
+    if(editingKoalas){
+      editingKoalas = false;
+      objectToSend.id = editingKoalaId;
+      editKoalas(objectToSend);
+      console.log(objectToSend);
+    } else {
+      // call saveKoala with the new object
+
+      saveKoala( objectToSend );}
+
+
   }); //end addButton on click
 
   $('#viewKoalas').on('click', '.deleteBtn', function(){
@@ -32,6 +43,18 @@ $( document ).ready( function(){
     var koalaToTransfer = $(this).data('transferid');
     transferKoala(koalaToTransfer);
   })
+
+  $('#viewKoalas').on('click', '.editBtn', function() {
+    editingKoalas = true;
+    var koala = $(this).parent().parent().data('koala');
+    editingKoalaId = koala.id;
+    $('#nameIn').val(koala.name),
+    $('#ageIn').val(koala.age),
+    $('#genderIn').val(koala.gender),
+    $('#readyForTransferIn').val(koala.ready_for_transfer),
+    $('#notesIn').val(koala.notes)
+
+  });
 
 }); // end doc ready
 
@@ -72,6 +95,7 @@ function appendToDom(koalas){
   for (var i = 0; i < koalaList.length; i++) {
       var koala = koalaList[i];
     $tr = $('<tr></tr>');
+    $tr.data('koala', koala);
     $tr.append('<td>' + koala.name + '</td>');
     $tr.append('<td>' + koala.age + '</td>');
     $tr.append('<td>' + koala.gender + '</td>');
@@ -82,7 +106,9 @@ function appendToDom(koalas){
     } else {
       $tr.append('<td></td>');
     }
+    $tr.append('<td><button class="editBtn" data-editid="' + koala.id + '">EDIT</button></td>');
     $tr.append('<td><button class="deleteBtn" data-buttonid="' + koala.id + '">DELETE</button></td>');
+
     $('#viewKoalas').append($tr);
   }
 
@@ -106,4 +132,13 @@ function deleteKoalas(koalaToDelete){
       success: getKoalas
     });
 
+}
+
+function editKoalas(koala){
+  $.ajax({
+    type: 'PUT',
+    url: '/koalas/update',
+    data: koala,
+    success: getKoalas
+  });
 }

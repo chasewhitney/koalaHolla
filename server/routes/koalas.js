@@ -66,6 +66,34 @@ router.post('/', function(req, res) {
   }) // end pool
 });
 
+router.put('/update', function(req, res) {
+  var koala = req.body;
+  console.log(koala);
+  pool.connect(function(errorConnectingToDatabase, db, done){
+    if(errorConnectingToDatabase) {
+      console.log('Error connecting to the database.');
+      res.sendStatus(500);
+    } else {
+      // We connected to the database!!!
+      // Now we're going to GET things from the db
+      var queryText = 'UPDATE "koalas" SET "name" = $1, "age" = $2, "gender" = $3, "ready_for_transfer" = $4, "notes" = $5 WHERE id = $6;';
+      // errorMakingQuery is a bool, result is an object
+      db.query(queryText, [koala.name, koala.age, koala.gender, koala.readyForTransfer, koala.notes, koala.id], function(errorMakingQuery, result){
+        done();
+        if(errorMakingQuery) {
+          console.log('Attempted to query with', queryText);
+          console.log('Error making query');
+          res.sendStatus(500);
+        } else {
+          // console.log(result);
+          // Send back the results
+          res.sendStatus(200);
+        }
+      }); // end query
+    } // end if
+  }) // end pool
+});
+
 router.put('/:id', function(req, res) {
   var koala = req.params.id;
   pool.connect(function(errorConnectingToDatabase, db, done){
@@ -93,6 +121,8 @@ router.put('/:id', function(req, res) {
   }) // end pool
 });
 
+
+
 router.delete('/:id', function(req, res) {
   var koala = req.params.id;
   pool.connect(function(errorConnectingToDatabase, db, done){
@@ -119,5 +149,8 @@ router.delete('/:id', function(req, res) {
     } // end if
   }) // end pool
 });
+
+
+
 
 module.exports = router;
