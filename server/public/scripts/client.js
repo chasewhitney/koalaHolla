@@ -21,6 +21,8 @@ $( document ).ready( function(){
       readyForTransfer: $('#readyForTransferIn').val(),
       notes: $('#notesIn').val()
     };
+    if(validateSubmission(objectToSend)){
+
     if(editingKoalas){
       editingKoalas = false;
       objectToSend.id = editingKoalaId;
@@ -29,9 +31,11 @@ $( document ).ready( function(){
     } else {
       // call saveKoala with the new object
 
-      saveKoala( objectToSend );}
+      saveKoala( objectToSend );
 
-
+    }
+    clearFields();
+  } else {console.log('validation failed');}
   }); //end addButton on click
 
   $('#viewKoalas').on('click', '.deleteBtn', function(){
@@ -97,7 +101,7 @@ function appendToDom(koalas){
       var koala = koalaList[i];
     $tr = $('<tr></tr>');
     $tr.data('koala', koala);
-    $tr.append('<td><b>' + koala.name + '</b></td>');
+    $tr.append('<td>' + koala.name + '</td>');
     $tr.append('<td>' + koala.age + '</td>');
     $tr.append('<td>' + koala.gender + '</td>');
     $tr.append('<td>' + koala.ready_for_transfer + '</td>');
@@ -142,4 +146,47 @@ function editKoalas(koala){
     data: koala,
     success: getKoalas
   });
+}
+
+function clearFields(){
+  $('#nameIn').val("");
+  $('#ageIn').val("");
+  $('#genderIn').val("");
+  $('#readyForTransferIn').val("");
+  $('#notesIn').val("");
+}
+
+function validateSubmission(submission) {
+  //name: $('#nameIn').val(),
+  //age: $('#ageIn').val(),
+  //gender: $('#genderIn').val(),
+  //readyForTransfer: $('#readyForTransferIn').val(),
+  //notes: $('#notesIn').val()
+
+ if(typeof submission.name != "string" || submission.name == "")
+ {
+   console.log('bad name');
+   alert("Enter a name.");
+   return false;
+ }
+ if(submission.age == "")
+ {
+   console.log('bad age');
+   alert("Enter an age.");
+   return false;
+ }
+ if(submission.gender.toUpperCase() != "M" && submission.gender.toUpperCase() != "F")
+ {
+   console.log('bad gender');
+   alert("Enter M or F for gender.");
+   return false;
+ }
+ if(submission.readyForTransfer != "true" && submission.readyForTransfer != "false")
+ {
+   console.log('bad ready for transfer');
+   alert("Enter true or false for ready to transfer status.");
+   return false;
+ }
+ else {return true;}
+
 }
